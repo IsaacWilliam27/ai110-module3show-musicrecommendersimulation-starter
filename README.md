@@ -19,17 +19,11 @@ Replace this paragraph with your own summary of what your version does.
 
 Explain your design in plain language.
 
-Some prompts to answer:
+Each Song stores ten attributes: a title, artist, genre, and mood label, plus five numeric features — energy, tempo, valence, danceability, and acousticness — all drawn from data/songs.csv. A UserProfile captures three preferences: a favorite genre, a favorite mood, and a target energy level between 0 and 1. To score a song, the Recommender awards bonus points for an exact genre match (0.25) and an exact mood match (0.35), then adds a numeric similarity score for energy using the formula 1.0 - abs(song_energy - target_energy), weighted at 0.25, with smaller weights on valence and acousticness. Every song in the catalog receives a score between 0 and 1, the list is sorted highest to lowest, and the top k songs are returned along with a brief explanation of why each one matched.Some prompts to answer:
 
-- What features does each `Song` use in your system
-  - For example: genre, mood, energy, tempo
-- What information does your `UserProfile` store
-- How does your `Recommender` compute a score for each song
-- How do you choose which songs to recommend
 
 You can include a simple diagram or bullet list if helpful.
-
----
+![alt text](image.png)
 
 ## Getting Started
 
