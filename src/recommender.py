@@ -1,4 +1,5 @@
 from typing import List, Dict, Tuple, Optional
+from operator import itemgetter
 from dataclasses import dataclass
 
 @dataclass
@@ -46,10 +47,7 @@ class Recommender:
         return "Explanation placeholder"
 
 def load_songs(csv_path: str) -> List[Dict]:
-    """
-    Loads songs from a CSV file.
-    Required by src/main.py
-    """
+    """Read songs.csv and return a list of dicts with numeric fields cast to int or float."""
     import csv
     songs = []
     with open(csv_path, newline="", encoding="utf-8") as f:
@@ -70,10 +68,7 @@ def load_songs(csv_path: str) -> List[Dict]:
     return songs
 
 def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
-    """
-    Scores a single song against user preferences.
-    Required by recommend_songs() and src/main.py
-    """
+    """Return a weighted similarity score (0.0–1.00) and a list of reason strings for one song."""
     score = 0.0
     reasons = []
 
@@ -103,15 +98,10 @@ def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
 
 
 def recommend_songs(user_prefs: Dict, songs: List[Dict], k: int = 5) -> List[Tuple[Dict, float, str]]:
-    """
-    Functional implementation of the recommendation logic.
-    Required by src/main.py
-    """
-    scored = []
-    for song in songs:
-        score, reasons = score_song(user_prefs, song)
-        explanation = " | ".join(reasons)
-        scored.append((song, score, explanation))
-
-    scored.sort(key=lambda x: x[1], reverse=True)
-    return scored[:k]
+    """Score every song, sort by score descending, and return the top k as (song, score, explanation) tuples."""
+    scored = [
+        (song, score, " | ".join(reasons))
+        for song in songs
+        for score, reasons in [score_song(user_prefs, song)]
+    ]
+    return sorted(scored, key=itemgetter(1), reverse=True)[:k]

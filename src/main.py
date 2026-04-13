@@ -9,32 +9,43 @@ You will implement the functions in recommender.py:
 - recommend_songs
 """
 
-from recommender import load_songs, recommend_songs
+from pathlib import Path
+
+try:
+    from src.recommender import load_songs, recommend_songs
+except ImportError:
+    from recommender import load_songs, recommend_songs
+
+DATA_PATH = Path(__file__).parent.parent / "data" / "songs.csv"
 
 
 def main() -> None:
-    songs = load_songs("data/songs.csv") 
+    songs = load_songs(DATA_PATH)
 
-    # Late-night study session profile
+    # Verification profile: pop / happy
     user_prefs = {
-        "genre":               "lofi",
-        "mood":                "focused",
-        "target_energy":       0.40,
-        "target_valence":      0.58,
-        "target_acousticness": 0.75,
-        "likes_acoustic":      True,
+        "genre":               "pop",
+        "mood":                "happy",
+        "target_energy":       0.80,
+        "target_valence":      0.82,
+        "target_acousticness": 0.15,
+        "likes_acoustic":      False,
     }
 
     recommendations = recommend_songs(user_prefs, songs, k=5)
 
-    print("\nTop recommendations:\n")
-    for rec in recommendations:
-        # You decide the structure of each returned item.
-        # A common pattern is: (song, score, explanation)
-        song, score, explanation = rec
-        print(f"{song['title']} - Score: {score:.2f}")
-        print(f"Because: {explanation}")
-        print()
+    print("\n" + "=" * 60)
+    print(f"  Top {len(recommendations)} Recommendations")
+    print(f"  Profile : {user_prefs['genre']} / {user_prefs['mood']} / energy {user_prefs['target_energy']}")
+    print("=" * 60)
+
+    for rank, (song, score, explanation) in enumerate(recommendations, start=1):
+        print(f"\n#{rank}  {song['title']} — {song['artist']}")
+        print(f"    Score  : {score:.2f}  |  Genre: {song['genre']}  |  Mood: {song['mood']}")
+        print("    Reasons:")
+        for reason in explanation.split(" | "):
+            print(f"      · {reason}")
+        print("-" * 60)
 
 
 if __name__ == "__main__":
